@@ -1,5 +1,5 @@
 from setuptools import find_packages, setup
-
+#Sets up as local package, allowing to import directly from src folder
 setup(
     name = 'Generative AI Project',
     version = '0.0.0',

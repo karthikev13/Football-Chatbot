@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.css">
+    <title>Chatbot - Brave Coder</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+</head>
+<body>
+    <div class="wrapper">
+        <div class="title">Simple Chatbot</div>
+        <div class="box" id="chatbox">
+            <!-- Chat messages will be dynamically inserted here -->
+            <div class="item">
+                <div class="icon">
+                    <i class="fa fa-user"></i>
+                </div>
+                <div class="msg">
+                    <p>Hello everyone, How are you?</p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="typing-area">
+            <div class="input-field">
+                <input type="text" id="messageInput" placeholder="Type your message" required>
+                <button id="sendButton">Send</button>
+            </div>
+        </div>
+    </div>
+    <script>
+        document.addEventListener("DOMContentLoaded", () => {
+            const inputField = document.getElementById("messageInput");
+            const sendButton = document.getElementById("sendButton");
+            const chatBox = document.getElementById("chatbox");
+
+            sendButton.addEventListener("click", () => {
+                const message = inputField.value.trim();
+                if (!message) return;
+
+                // Add user message to the chatbox
+                const userMsg = `<div class="item right">
+                    <div class="msg">
+                        <p>${message}</p>
+                    </div>
+                </div>`;
+                chatBox.innerHTML += userMsg;
+
+                // Clear the input field
+                inputField.value = "";
+
+                // Scroll to the bottom of the chatbox
+                chatBox.scrollTop = chatBox.scrollHeight;
+
+                // Send the message to the server
+                fetch("/get", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                    body: JSON.stringify({ msg: message }),
+                })
+                    .then((response) => response.text())
+                    .then((data) => {
+                        // Add chatbot response to chatbox
+                        const botMsg = `<div class="item">
+                            <div class="icon">
+                                <i class="fa fa-user"></i>
+                            </div>
+                            <div class="msg">
+                                <p>${data}</p>
+                            </div>
+                        </div>`;
+                        chatBox.innerHTML += botMsg;
+
+                        // Scroll to the bottom of the chatbox
+                        chatBox.scrollTop = chatBox.scrollHeight;
+                    })
+                    .catch((error) => console.error("Error:", error));
+            });
+        });
+    </script>
+</body>
+</html>
